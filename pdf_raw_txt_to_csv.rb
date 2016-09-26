@@ -52,7 +52,14 @@ comunas = {
 	'ZAPALLAR' => ['ZAPALLAR', 'CATAPILCO'],
 	'LOS ANDES' => ['LOS ANDES', 'ALTO ACONCAGUA'],
 	'NOGALES' => ['NOGALES', 'EL MELON'],
-	'VALPARAISO' => ['EL PUERTO', 'BARON', 'PLAYA ANCHA', 'PLACILLA DE PENUELAS']
+	'VALPARAISO' => ['EL PUERTO', 'BARON', 'PLAYA ANCHA', 'PLACILLA DE PENUELAS', 'LAGUNA VERDE'],
+	'VINA DEL MAR' => ['SAUSALITO', 'FORESTAL', 'AGUA SANTA', 'MIRAFLORES'],
+	'SAN ANTONIO' => ['SAN ANTONIO', 'CUNCUMEN'],
+	'QUILPUE' => ['QUILPUE', 'EL BELLOTO', 'LOS MOLLES'],
+	'RANCAGUA' => ['RANCAGUA', 'RANCAGUA ORIENTE'],
+	'MACHALI' => ['MACHALI', 'COYA'],
+	#ISSUE!!!!! MAYBE THE PARENTHESIS IS CAUSING THE ISSSUE. EX A0626006.pdf_pages_96.txt
+	'OLIVAR' => ['OLIVAR (ALTO)', 'GULTRO']
 }
 
 x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
@@ -60,8 +67,7 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 
 
 
-#(29530...x.length).each do |blob|
-(29551...29553).each do |blob|
+(50426...x.length).each do |blob|
 	page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\\' + x[blob])
 	comuna = ''
 	lasthead = 0
@@ -85,19 +91,20 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 					if !comunas[comuna].any? { |c| page[i].strip =~ /#{c}\s\s\s+./}
 					  	string = page[i].strip
 				    	counter = i + 1
-		          until ((comunas[comuna].any? { |c| string =~ /#{comuna}\s\s\s+./} ) & !(string =~ /\d+\.\d+\.\d+-\S+/).nil?) | (counter == page.length)
+		          until ((comunas[comuna].any? { |c| string =~ /#{c}\s\s\s+./} ) & !(string =~ /\d+\.\d+\.\d+-\S+/).nil?) | (counter == page.length)
 								if page[counter][0] != "\n"
 				    			string += '  ' + page[counter].strip
 				    		end
-#=begin USE THIS TO DEBUG THE HURTADO PROBLEM
+=begin USE THIS TO DEBUG THE HURTADO PROBLEM
 								puts "until repeat loop: #{counter - i}"
-								p (comunas[comuna].any? { |c| string =~ /#{comuna}\s\s\s+./} )
-#								p string =~ /(SAMO ALTO)\s\s\s+./
-#								p string =~ /(SAMO ALTO)\s\s\s/
-#								p string =~ /(SAMO ALTO)/
-#								p string.include?('(SAMO ALTO)')
+								p (comunas[comuna].any? { |c| string =~ /#{c}\s\s\s+./} )
+
+								p string =~ /(SAMO ALTO)\s\s\s+./
+								p string =~ /(SAMO ALTO)\s\s\s/
+								p string =~ /(SAMO ALTO)/
+								p string.include?('(SAMO ALTO)')
 								p !(string =~ /\d+\.\d+\.\d+-\S+/).nil?
-#=end
+=end
 				    		counter += 1
 				    	end
 				    string_to_csv(string, comunas[comuna])
