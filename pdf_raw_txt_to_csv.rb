@@ -77,7 +77,13 @@ comunas = {
 	'SAN CLEMENTE' => ['SAN CLEMENTE', 'VILCHES'],
 	'MAULE' => ['MAULE', 'DUAO', 'COLIN'],
 	'PENCAHUE' => ['PENCAHUE', 'CORINTO', 'TOCONEY'],
-	'CONSTITUCION' => ['CONSTITUCION', 'PUTU']
+	'CONSTITUCION' => ['CONSTITUCION', 'PUTU', 'SANTA OLGA'],
+	'CUREPTO' => ['CUREPTO', 'HUAQUEN', 'GUALLECO'],
+	'YERBAS BUENAS' => ['YERBAS BUENAS', 'ORILLA DEL MAULE'],
+	'PARRAL' => ['PARRAL', 'CATILLO'],
+	'SAN JAVIER' => ['SAN JAVIER', 'NIRIVILO', 'HUERTA DEL MAULE', 'MELOZAL'],
+	'CAUQUENES' => ['CAUQUENES', 'SAUZAL', 'POCILLAS'],
+	'CHILLAN' => ['CHILLAN', 'QUINCHAMALI']
 }
 
 x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
@@ -85,7 +91,7 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 
 
 
-(64959...x.length).each do |blob|
+(70306...x.length).each do |blob|
 	page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\\' + x[blob])
 	comuna = ''
 	lasthead = 0
