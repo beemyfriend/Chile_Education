@@ -1,7 +1,7 @@
 #a change for git
 def string_to_csv(string, comuna)
 	text = string
-	rut = string[/\d+\.\d+\.\d+-\S+/]
+	rut = string[/(\d+\.)?\d+\.\d+-\S+/]
 	text = text[0...text.index(rut)] + '   ' + text[(text.index(rut)+rut.length)...text.length]
 	name = text[0...text.index(/   /)]
 	text = text[name.strip.length...text.length]
@@ -59,7 +59,25 @@ comunas = {
 	'RANCAGUA' => ['RANCAGUA', 'RANCAGUA ORIENTE'],
 	'MACHALI' => ['MACHALI', 'COYA'],
 	#ISSUE!!!!! MAYBE THE PARENTHESIS IS CAUSING THE ISSSUE. EX A0626006.pdf_pages_96.txt
-	'OLIVAR' => ['OLIVAR (ALTO)', 'GULTRO']
+	#The suolution was to use Regexp.quote(c)
+	'OLIVAR' => ['OLIVAR (ALTO)', 'GULTRO'],
+	'REQUINOA' => ['REQUINOA', 'LOS LIRIOS'],
+	'RENGO' => ['RENGO', 'ROSARIO', 'ESMERALDA'],
+	'MALLOA' => ['MALLOA', 'PELEQUEN'],
+	'SAN VICENTE' => ['SAN VICENTE', 'ZUNIGA'],
+	'DONIHUE' => ['DONIHUE', 'LO MIRANDA'],
+	'LAS CABRAS' => ['LAS CABRAS', 'LAGO RAPEL (EL MANZANO)'],
+	'SAN FERNANDO' => ['SAN FERNANDO', 'PUENTE NEGRO'],
+	'PAREDONES' => ['PAREDONES', 'SAN PEDRO DE ALCANTARA'],
+	'MOLINA' => ['MOLINA', 'LONTUE', 'TRES ESQUINAS'],
+	'SAGRADA FAMILIA' => ['SAGRADA FAMILIA', 'VILLA PRAT'],
+	'HUALANE' => ['HUALANE', 'LA HUERTA'],
+	'LICANTEN' => ['LICANTEN', 'ILOCA'],
+	'VICHUQUEN' => ['VICHUQUEN', 'LLICO DE MATAQUITO'],
+	'SAN CLEMENTE' => ['SAN CLEMENTE', 'VILCHES'],
+	'MAULE' => ['MAULE', 'DUAO', 'COLIN'],
+	'PENCAHUE' => ['PENCAHUE', 'CORINTO', 'TOCONEY'],
+	'CONSTITUCION' => ['CONSTITUCION', 'PUTU']
 }
 
 x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
@@ -67,7 +85,7 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 
 
 
-(50426...x.length).each do |blob|
+(64959...x.length).each do |blob|
 	page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\\' + x[blob])
 	comuna = ''
 	lasthead = 0
@@ -88,10 +106,11 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 	    puts "#{blob} of #{x.length} documents: #{x[blob]}: line #{i} of #{page.length} "
 	    if (page[i] =~ /\s/) != 0
 		    if comunas.include?(comuna)
-					if !comunas[comuna].any? { |c| page[i].strip =~ /#{c}\s\s\s+./}
+					if !comunas[comuna].any? { |c| page[i].strip =~ /#{Regexp.quote(c)}\s\s\s+./}
 					  	string = page[i].strip
 				    	counter = i + 1
-		          until ((comunas[comuna].any? { |c| string =~ /#{c}\s\s\s+./} ) & !(string =~ /\d+\.\d+\.\d+-\S+/).nil?) | (counter == page.length)
+
+		          until ((comunas[comuna].any? { |c| string =~ /#{Regexp.quote(c)}\s\s\s+./} ) & !(string =~ /(\d+\.)?\d+\.\d+-\S+/).nil?) | (counter == page.length)
 								if page[counter][0] != "\n"
 				    			string += '  ' + page[counter].strip
 				    		end
@@ -108,21 +127,21 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 				    		counter += 1
 				    	end
 				    string_to_csv(string, comunas[comuna])
-					elsif (comunas[comuna].any? { |c| page[i].include?(c)} ) & !(page[i] =~ /\d+\.\d+\.\d+-\S+/).nil?
+					elsif (comunas[comuna].any? { |c| page[i].include?(c)} ) & !(page[i] =~ /(\d+\.)?\d+\.\d+-\S+/).nil?
 						string_to_csv(page[i], comunas[comuna])
 					end
 			  else
 				  if (page[i] =~ /#{comuna}\s\s\s+./).nil?
 					    string = page[i].strip
 					    counter = i + 1
-							until (!(string =~ /#{comuna}\s\s\s+./).nil? & !(string =~ /\d+\.\d+\.\d+-\S+/).nil?) | (counter == page.length)
+							until (!(string =~ /#{comuna}\s\s\s+./).nil? & !(string =~ /(\d+\.)?\d+\.\d+-\S+/).nil?) | (counter == page.length)
 					    	if page[counter][0] != "\n"
 					    		string += '  ' + page[counter].strip
 					    	end
 					    	counter += 1
 					    end
 					   	string_to_csv(string, comuna)
-					elsif (page[i].include?(comuna)) & !(page[i] =~ /\d+\.\d+\.\d+-\S+/).nil?
+					elsif (page[i].include?(comuna)) & !(page[i] =~ /(\d+\.)?\d+\.\d+-\S+/).nil?
 							string_to_csv(page[i], comuna)
 					end
 			  end
