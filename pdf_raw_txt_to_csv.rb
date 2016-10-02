@@ -1,29 +1,4 @@
-
-def string_to_csv(string, comuna)
-  text = string
-  rut = string[/(\d+\.)?\d+\.\d+-\S+/]
-  text = text[0...text.index(rut)] + '   ' + text[(text.index(rut)+rut.length)...text.length]
-  name = text[0...text.index(/   /)]
-  text = text[name.strip.length...text.length]
-  sexo = text[/\s\sVAR\s|\s\sMUJ\s/]
-  text = text[text[(text.index(sexo) + sexo.length)...text.length]]
-  mesa = text[text.rindex(/   /)...text.length]
-  text = text[0...text.rindex(mesa)]
-  if comuna.kind_of?(Array)
-    identifier = {}
-    comuna.each {|i| identifier[i] = text.rindex(i)}
-    identifier.map {|k,v| v.nil? ? identifier[k] = 0 : identifier[k] = v}
-    circ = identifier.max_by{|k,v| v}[0]
-  else
-    circ = text[text.rindex(comuna)...text.length]
-  end
-  text = text[0...text.rindex(circ)]
-  domicilio = text
-  puts("#{name};#{rut.strip};#{sexo.strip};#{domicilio.strip};#{circ.strip};#{mesa.strip}")
-  File.open('C:\Users\bortiz\Documents\FINALRUTHOPEFULLY.txt', 'a+') {|s| s << "\n#{name};#{rut.strip};#{sexo.strip};#{domicilio};#{comuna};#{mesa.strip}"}
-end
-
-comunas = {
+Comunas = {
   'MARIA ELENA' => ['MARIA ELENA', 'PEDRO DE VALDIVIA', 'QUILLAGUA'],
   'POZO ALMONTE' => ['POZO ALMONTE', 'MAMINA'],
   'HUARA' => ['HUARA', 'CHIAPA'],
@@ -39,7 +14,7 @@ comunas = {
   #'RIO HURTADO' INCLUDES 'HURTADO', MAY CAUSE ALL CIRC TO BE 'HURTADO'
   #MINI CHEAT WILL BE TO USE '(SAMO ALTO)'' INSTEAD OF 'RIO HURTADO (SAMO ALTO)'
   #SOMETHING IS REALLY FUCKED UP WITH 'RIO HURTADO'  A0411002.PDF
-  'RIO HURTADO' => ['(SAMO ALTO)', 'HURTADO'],
+  'RIO HURTADO' => ['RIO HURTADO (SAMO ALTO)', 'HURTADO'],
   'MONTE PATRIA' => ['MONTE PATRIA', 'EL PALQUI', 'CHANARAL ALTO', 'CAREN', 'RAPEL'],
   'SALAMANCA' => ['SALAMANCA', 'CHELLEPIN'],
   'LOS VILOS' => ['LOS VILOS', 'QUILIMARI', 'CAIMANES'],
@@ -106,10 +81,10 @@ comunas = {
 	#SIMILIAR CHEAT AS RIO HURTADO
 	# (HUEPIL) INSTEAD OF TUCAPEL (HUEPIL)
 	#91807 A0835003.PDF
-	'TUCAPEL' => ['TUCAPEL', '(HUEPIL)', 'POLCURA', 'TRUPAN'],
+	'TUCAPEL' => ['TUCAPEL', 'TUCAPEL (HUEPIL)', 'POLCURA', 'TRUPAN'],
 	'QUILLECO' => ['QUILLECO', 'LAS CANTERAS'],
 	#ESTACION INSTEAD OF YUMBEL ESTACION A0835013.PDF
-	'YUMBEL' => ['YUMBEL', 'RERE', 'RIO CLARO', 'ESTACION', 'TOMECO'],
+	'YUMBEL' => ['YUMBEL', 'RERE', 'RIO CLARO', 'YUMBEL ESTACION', 'TOMECO'],
 	'LEBU' => ['LEBU', 'ISLA MOCHA'],
 	'ARAUCO' => ['ARAUCO', 'LARAQUETE', 'CARAMPANGUE', 'LLICO'],
 	'LOS ALAMOS' => ['LOS ALAMOS', 'ANTIHUALA'],
@@ -157,7 +132,7 @@ comunas = {
 	'QUINCHAO' => ['QUINCHAO (ACHAO)', 'CHAULINEC', 'QUENAC'],
 	'CHAITEN' => ['CHAITEN', 'AYACARA', 'VILLA SANTA LUCIA'],
   #UALAIHUE PUERTO INSTEAD OF HUALAIHUE PUERTO A1043002.PDF 120033/217760
-	'HUALAIHUE' => ['HUALAIHUE', 'UALAIHUE PUERTO', 'CONTAO', 'ROLECHA'],
+	'HUALAIHUE' => ['HUALAIHUE', 'HUALAIHUE PUERTO', 'CONTAO', 'ROLECHA'],
 	'COYHAIQUE' => ['COYHAIQUE', 'VALLE SIMPSON', 'NIREHUAO', 'BALMACEDA'],
 	'LAGO VERDE' => ['LAGO VERDE', 'LA TAPERA'],
 	'AISEN' => ['AISEN', 'PUERTO CHACABUCO', 'MANIHUALES', 'PUERTO AGUIRRE'],
@@ -175,9 +150,9 @@ comunas = {
 	'CONCHALI' => ['LO NEGRETE', 'EL CORTIJO'],
 	'HUECHURABA' => ['HUECHURABA', 'LOS LIBERTADORES'],
   #UDAHUEL SUR INSTEAD OF PUDAHUEL SUR
-	'PUDAHUEL' => ['PUDAHUEL', 'CIUDAD DE LOS VALLES', 'UDAHUEL SUR'],
+	'PUDAHUEL' => ['PUDAHUEL', 'CIUDAD DE LOS VALLES', 'PUDAHUEL SUR'],
 	#AIPU PONIENTE INSTEAD OF MAIPU PONIENTE
-	'MAIPU' => ['MAIPU', 'CIUDAD SATELITE', 'AIPU PONIENTE', 'LOS PAJARITOS', ],
+	'MAIPU' => ['MAIPU', 'CIUDAD SATELITE', 'MAIPU PONIENTE', 'LOS PAJARITOS', ],
 	'LO ESPEJO' => ['LO VALLEDOR', 'ESTACION LO ESPEJO' ],
 	'EL BOSQUE' => ['LUIS CRUZ MARTINEZ', 'CAPITAN AVALOS' ],
 	'PEDRO AGUIRRE CERDA' => ['P AGUIRRE CERDA S.', 'P AGUIRRE CERDA N.'],
@@ -204,11 +179,125 @@ comunas = {
 	'RIO BUENO' => ['RIO BUENO', 'CRUCERO', 'CAYURRUCA', 'MANTILHUE'],
 	'LAGO RANCO' => ['LAGO RANCO', 'RININAHUE'],
   #ARICA NORTE IS RICA NORTE
-	'ARICA' => ['ARICA', 'RICA NORTE', 'SAN MIGUEL DE AZAPA'],
+	'ARICA' => ['ARICA', 'ARICA NORTE', 'SAN MIGUEL DE AZAPA'],
 	'CAMARONES' => ['CAMARONES', 'CODPA'],
 	'PUTRE' => ['PUTRE', 'BELEN']
 }
 
+def string_to_csv(string, comuna)
+  text = string
+  rut = string[/(\d+\.)?\d+\.\d+-\S+/]
+  text = text[0...text.index(rut)] + '   ' + text[(text.index(rut)+rut.length)...text.length]
+  name = text[0...text.index(/   /)]
+  text = text[name.strip.length...text.length]
+  sexo = text[/\s\sVAR\s|\s\sMUJ\s/]
+  text = text[text[(text.index(sexo) + sexo.length)...text.length]]
+  mesa = text[text.rindex(/   /)...text.length]
+  text = text[0...text.rindex(mesa)].strip
+
+  if comuna.kind_of?(Array)
+    identifier = {}
+    comuna.each {|i|  identifier[i] = text.rindex(i)}
+    identifier.map {|k,v| v.nil? ? identifier[k] = 0 : identifier[k] = v}
+    pot_circ = []
+    identifier.each { |k,v| ((text.length - k.length) == text.rindex(k)) ? pot_circ << k : nil}
+		circ = pot_circ.max_by {|i| i.length}
+  else
+    circ = text[text.rindex(comuna)...text.length]
+  end
+  text = text[0...text.rindex(circ)]
+  domicilio = text
+  record = "\n#{name};#{rut.strip};#{sexo.strip};#{domicilio.strip};#{circ.strip};#{mesa.strip}"
+  print record
+  return record
+end
+
+def identify_comuna_and_header(page)
+  comuna = ''
+  lasthead = 0
+  (0...page.length).each do |i|
+    if page[i].include?("COMUNA:") & page[i].include?("PAGINA")
+      comuna = page[i]
+    end
+    if page[i].include?('MESA') & page[i].include?('CIRCUNSCRIPCI')
+      lasthead = i
+    end
+  end
+  comuna = comuna[/COMUNA:.+PAGINA/]
+  comuna =  comuna[7...(comuna.length-6)].strip
+  return [comuna, lasthead]
+end
+
+#starter should be lasthead + 1
+def parse_line_for_csv_record(page, start_line, comuna)
+  page_as_csv = ""
+  last_record = ""
+  (start_line...page.length).each {|i|
+    print "\nline #{i} of #{page.length}"
+    if (page[i] =~ /\s/) != 0
+      if Comunas.include?(comuna)
+        if !Comunas[comuna].any? { |c| page[i].strip =~ /#{Regexp.quote(c)}\s\s\s+./} & ((page[i+1] =~ /\n/) == 0)
+          name = last_record[0...last_record.index(';')]
+          remain = last_record[last_record.index(';')...last_record.length]
+          new_record = name + ' ' + page[i].strip + remain
+          page_as_csv.gsub!(last_record, new_record)
+        elsif (!Comunas[comuna].any? { |c| page[i].strip =~ /#{Regexp.quote(c)}\s\s\s+./} | !(Comunas[comuna].any? {|c| page[i].rindex(c).nil? ? false : page[i].index(/(\d+\.)?\d+\.\d+-\S+/) < page[i].rindex(c) })) & (page[i] =~ /\s\s\s\d+( )?(\w)?(\s)/).nil?
+          string = page[i].strip
+          counter = i + 1
+          until ((Comunas[comuna].any? { |c| string =~ /#{Regexp.quote(c)}\s\s\s+./} ) & !(string =~ /(\d+\.)?\d+\.\d+-\S+/).nil? & Comunas[comuna].any? {|c| string.rindex(c).nil? ? false : string.index(/(\d+\.)?\d+\.\d+-\S+/) < string.rindex(c) } & !(string =~ /\s\s\s\d+( )?(\w)?(\s)/).nil?) | (counter == page.length)
+            if page[counter][0] != "\n"
+              string += '  ' + page[counter].strip
+            end
+            counter += 1
+          end
+          last_record = string_to_csv(string, Comunas[comuna])
+          page_as_csv += last_record
+        elsif (Comunas[comuna].any? { |c| page[i].include?(c)} ) & !(page[i] =~ /(\d+\.)?\d+\.\d+-\S+/).nil?
+          last_record = string_to_csv(page[i], Comunas[comuna])
+          page_as_csv += last_record
+        end
+      else
+        if !page[i].include?(comuna) & ((page[i+1] =~/\n/) == 0)
+          name = last_record[0...last_record.index(';')]
+          remain = last_record[last_record.index(';')...last_record.length]
+          new_record = name + ' ' + page[i].strip + remain
+          page_as_csv.gsub!(last_record, new_record)
+        elsif ((page[i] =~ /#{Regexp.quote(comuna)}\s\s\s+./).nil? | ( page[i].rindex(comuna).nil? ? false : page[i].index(/(\d+\.)?\d+\.\d+-\S+/) > page[i].rindex(comuna))) & (page[i] =~ /\s\s\s\d+( )?(\w)?(\s)/).nil?
+          string = page[i].strip
+          counter = i + 1
+          until (!(string =~ /#{Regexp.quote(comuna)}\s\s\s+./).nil? & !(string =~ /(\d+\.)?\d+\.\d+-\S+/).nil? & (string.rindex(comuna).nil? ? false : string.index(/(\d+\.)?\d+\.\d+-\S+/) < string.rindex(comuna)) & !(string =~ /\s\s\s\d+( )?(\w)?(\s)/).nil?) | (counter == page.length)
+            if page[counter][0] != "\n"
+              string += '  ' + page[counter].strip
+            end
+            counter += 1
+          end
+          last_record = string_to_csv(string, comuna)
+          page_as_csv += last_record
+        elsif (page[i].include?(comuna)) & !(page[i] =~ /(\d+\.)?\d+\.\d+-\S+/).nil?
+          last_record = string_to_csv(page[i], comuna)
+          page_as_csv += last_record
+        end
+      end
+    end
+  }
+  page_as_csv
+end
+
+x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
+
+(2...x.length).each do |blob|
+	page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\\' + x[blob])
+#  page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\A0835001.pdf_page_1726.txt')
+  info = identify_comuna_and_header(page)
+  comuna = info[0]
+  lasthead = info[1]
+  puts "#{blob} of #{x.length} documents: #{x[blob]}"
+  record = parse_line_for_csv_record(page, (lasthead+1), comuna)
+  File.open('C:\Users\bortiz\Desktop\csv_rough.txt', 'a+') {|s| s << record }
+end
+
+
+=begin
 x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 
 (217654...x.length).each do |blob|
@@ -245,7 +334,7 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 								p string =~ /(SAMO ALTO)/
 								p string.include?('(SAMO ALTO)')
 								p !(string =~ /\d+\.\d+\.\d+-\S+/).nil?
-=end
+#=end
 		    counter += 1
 		  end
 		  string_to_csv(string, comunas[comuna])
@@ -270,3 +359,5 @@ x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 	end
   }
 end
+
+=end
