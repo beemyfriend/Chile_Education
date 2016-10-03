@@ -64,6 +64,7 @@ Comunas = {
 	'YUNGAY' => ['YUNGAY', 'CAMPANARIO'],
 	'BULNES' => ['BULNES', 'SANTA CLARA'],
 	'QUILLON' => ['QUILLON', 'CERRO NEGRO' ],
+  'QUILLOTA' => ['QUILLOTA', 'SAN PEDRO DE QUILLOTA'],
 	'RANQUIL' => ['RANQUIL (NIPAS)'],
 	'COELEMU' => ['COELEMU', 'VEGAS DE ITATA', 'GUARILIHUE'],
 	'SAN NICOLAS' => ['SAN NICOLAS', 'PUENTE NUBLE'],
@@ -187,7 +188,7 @@ Comunas = {
 def string_to_csv(string, comuna)
   text = string
 
-  rut = string[/(\d+\.)?\d+\.\d+-\S+/]
+  rut = string[/(\d+\.)?(\d+\.)?\d+-\S+/]
   text = text[0...text.index(rut)] + '   ' + text[(text.index(rut)+rut.length)...text.length]
   name = text[0...text.index(/   /)]
   text = text[name.strip.length...text.length]
@@ -242,10 +243,10 @@ def parse_line_for_csv_record(page, start_line, comuna)
           remain = last_record[last_record.index(';')...last_record.length]
           new_record = name + ' ' + page[i].strip + remain
           page_as_csv.gsub!(last_record, new_record)
-        elsif (!Comunas[comuna].any? { |c| page[i].strip =~ /#{Regexp.quote(c)}\s\s\s+./} | !(Comunas[comuna].any? {|c| page[i].rindex(c).nil? ? false : page[i].index(/(\d+\.)?\d+\.\d+-\S+/) < page[i].rindex(c) }))
+        elsif (!Comunas[comuna].any? { |c| page[i].strip =~ /#{Regexp.quote(c)}\s\s\s+./} | !(Comunas[comuna].any? {|c| page[i].rindex(c).nil? ? false : page[i].index(/(\d+\.)?(\d+\.)?\d+-\S+/) < page[i].rindex(c) }))
           string = page[i].strip
           counter = i + 1
-          until ((Comunas[comuna].any? { |c| string =~ /#{Regexp.quote(c)}\s\s\s+./} ) & !(string =~ /(\d+\.)?\d+\.\d+-\S+/).nil? & Comunas[comuna].any? {|c| string.rindex(c).nil? ? false : string.index(/(\d+\.)?\d+\.\d+-\S+/) < string.rindex(c) } ) | (counter == page.length)
+          until ((Comunas[comuna].any? { |c| string =~ /#{Regexp.quote(c)}\s\s\s+./} ) & !(string =~ /(\d+\.)?(\d+\.)?\d+-\S+/).nil? & Comunas[comuna].any? {|c| string.rindex(c).nil? ? false : string.index(/(\d+\.)?(\d+\.)?\d+-\S+/) < string.rindex(c) } ) | (counter == page.length)
             if page[counter][0] != "\n"
               string += '  ' + page[counter].strip
             end
@@ -253,7 +254,7 @@ def parse_line_for_csv_record(page, start_line, comuna)
           end
           last_record = string_to_csv(string, Comunas[comuna])
           page_as_csv += last_record
-        elsif (Comunas[comuna].any? { |c| page[i].include?(c)} ) & !(page[i] =~ /(\d+\.)?\d+\.\d+-\S+/).nil?
+        elsif (Comunas[comuna].any? { |c| page[i].include?(c)} ) & !(page[i] =~ /(\d+\.)?(\d+\.)?\d+-\S+/).nil?
           last_record = string_to_csv(page[i], Comunas[comuna])
           page_as_csv += last_record
         end
@@ -263,10 +264,10 @@ def parse_line_for_csv_record(page, start_line, comuna)
           remain = last_record[last_record.index(';')...last_record.length]
           new_record = name + ' ' + page[i].strip + remain
           page_as_csv.gsub!(last_record, new_record)
-        elsif ((page[i] =~ /#{Regexp.quote(comuna)}\s\s\s+./).nil? | ( page[i].rindex(comuna).nil? ? false : page[i].index(/(\d+\.)?\d+\.\d+-\S+/) > page[i].rindex(comuna)))
+        elsif ((page[i] =~ /#{Regexp.quote(comuna)}\s\s\s+./).nil? | ( page[i].rindex(comuna).nil? ? false : page[i].index(/(\d+\.)?(\d+\.)?\d+-\S+/) > page[i].rindex(comuna)))
           string = page[i].strip
           counter = i + 1
-          until (!(string =~ /#{Regexp.quote(comuna)}\s\s\s+./).nil? & !(string =~ /(\d+\.)?\d+\.\d+-\S+/).nil? & (string.rindex(comuna).nil? ? false : string.index(/(\d+\.)?\d+\.\d+-\S+/) < string.rindex(comuna)) ) | (counter == page.length)
+          until (!(string =~ /#{Regexp.quote(comuna)}\s\s\s+./).nil? & !(string =~ /(\d+\.)?(\d+\.)?\d+-\S+/).nil? & (string.rindex(comuna).nil? ? false : string.index(/(\d+\.)?(\d+\.)?\d+-\S+/) < string.rindex(comuna)) ) | (counter == page.length)
             if page[counter][0] != "\n"
               string += '  ' + page[counter].strip
             end
@@ -274,7 +275,7 @@ def parse_line_for_csv_record(page, start_line, comuna)
           end
           last_record = string_to_csv(string, comuna)
           page_as_csv += last_record
-        elsif (page[i].include?(comuna)) & !(page[i] =~ /(\d+\.)?\d+\.\d+-\S+/).nil?
+        elsif (page[i].include?(comuna)) & !(page[i] =~ /(\d+\.)?(\d+\.)?\d+-\S+/).nil?
           last_record = string_to_csv(page[i], comuna)
           page_as_csv += last_record
         end
@@ -286,13 +287,13 @@ end
 
 x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
 
-(212360...x.length).each do |blob|
+(2...x.length).each do |blob|
 	page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\\' + x[blob])
-#  page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\A0835001.pdf_page_1726.txt')
+#  page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\A1439004.pdf_page_128.txt')
   info = identify_comuna_and_header(page)
   comuna = info[0]
   lasthead = info[1]
   puts "\n\n#{blob} of #{x.length} documents: #{x[blob]}"
   record = parse_line_for_csv_record(page, (lasthead+1), comuna)
-  File.open('C:\Users\bortiz\Desktop\csv_rough.txt', 'a+') {|s| s << record }
+  File.open('C:\Users\bortiz\Desktop\rut_csv_rough.txt', 'a+') {|s| s << record }
 end
