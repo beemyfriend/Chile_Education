@@ -301,9 +301,15 @@ def parse_line_for_csv_record(page, start_line, comuna)
   page_as_csv
 end
 
+# x will be a directory that contains all text files that were converted from pdfs
 x = Dir.entries('C:\Users\bortiz\Documents\pages_no_accents')
+
+#below I create a file that will become a large semi-colon seperated variable file
+#and create the header
 File.open('C:\Users\bortiz\Desktop\rut_csv_rough.txt', 'a+') {|s| s <<  "name;rut;sexo;domicilio;circunscripcion;mesa"}
 
+#Below I go through every text file that was created from a pdf, parse the information
+#and add the information to a single large semi-colon seperated variable file.
 (2...x.length).each do |blob|
   page = IO.readlines('C:\Users\bortiz\Documents\pages_no_accents\\' + x[blob])
   info = identify_comuna_and_header(page)
